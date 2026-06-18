@@ -552,7 +552,7 @@ export default function App() {
               return (
                 <div key={s} className="flex flex-col gap-2.5">
                   <div className="rounded-xl p-3 text-center" style={{ backgroundColor: t.semHdrBg, border: `1px solid ${t.semHdrBorder}` }}>
-                    <div className="text-xs font-bold tracking-widest uppercase mb-0.5" style={{ color: t.semLabel }}>Sem</div>
+                    <div className="text-xs font-bold tracking-widest uppercase mb-0.5" style={{ color: t.semLabel }}>SEMESTRE</div>
                     <div className="text-2xl font-black leading-none" style={{ color: t.semNum }}>{s}</div>
                     <div className="text-xs mt-0.5 font-medium" style={{ color: t.semCr }}>
                       {mats.reduce((a, m) => a + m.creditos, 0)}cr
