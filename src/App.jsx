@@ -405,12 +405,27 @@ function ThemeSwitcher({ current, onChange, t }) {
 
 // ─── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [themeKey, setThemeKey] = useState("dark");
+  // 1. Inicializamos el estado buscando si ya existe un tema guardado en el navegador
+  const [themeKey, setThemeKey] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('selected-theme');
+      if (saved && THEMES[saved]) return saved;
+    }
+    return "dark"; // Tema por defecto si no hay registro
+  });
+
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [modalSlotId, setModalSlotId] = useState(null);
   const [optativasConfig, setOptativasConfig] = useState({});
 
   const t = THEMES[themeKey] || THEMES.dark;
+
+  // 2. Guardamos en localStorage cada vez que cambia el tema
+  useEffect(() => {
+    localStorage.setItem('selected-theme', themeKey);
+    // Cambia el fondo del body para evitar cortes visuales raros al hacer scroll
+    document.body.style.backgroundColor = t.pageBg;
+  }, [themeKey, t.pageBg]);
 
   // Process MATERIAS taking into account selected OPTATIVAS
   const effectiveMaterias = useMemo(() => {
@@ -511,7 +526,7 @@ export default function App() {
       {/* ── Grid ── */}
       <main className="max-w-[1700px] mx-auto px-3 sm:px-5 py-5">
         <div className="overflow-x-auto pb-6">
-          <div className="grid gap-3 min-w-[1000px]" style={{ gridTemplateColumns: "repeat(8, minmax(0, 1fr))" }}>
+          <div className="grid gap-3 min-w-[1600px]" style={{ gridTemplateColumns: "repeat(8, minmax(0, 1fr))" }}>
             {SEMESTRES.map(s => {
               const mats = effectiveMaterias.filter(m => m.semestre === s || m.slotSemestre === s);
               return (
