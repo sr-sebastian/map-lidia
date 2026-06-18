@@ -307,6 +307,7 @@ function Card({ materia, state, t, onCardClick, onInfo }) {
   const prev = state === "previa";
   const hab  = state === "habilitada";
   const isUnconf = materia.isUnconfiguredOptativa;
+  const isConfOpt = materia.isConfiguredOptativa; 
 
   let bg, border, bar, nameC, idC, badgeBg;
   if (dim)       { bg=t.cDBg; border=t.cDBorder; bar="transparent"; nameC=t.cDName; idC=t.cDName; badgeBg=t.cNBadgeBg; }
@@ -315,7 +316,6 @@ function Card({ materia, state, t, onCardClick, onInfo }) {
   else if (hab)  { bg=t.cHBg; border=t.cHBorder; bar=t.cHBar; nameC=t.cHName; idC=t.cHId; badgeBg=t.cHBadgeBg; }
   else           { bg=t.cNBg; border=t.cNBorder; bar=t.cNBar; nameC=t.cNName; idC=t.cNId; badgeBg=t.cNBadgeBg; }
 
-  // Adjust visualization for an unconfigured optativa
   if (isUnconf && !sel && !dim) {
     bg = "transparent";
     border = t.mDivider;
@@ -329,7 +329,7 @@ function Card({ materia, state, t, onCardClick, onInfo }) {
       className="relative rounded-xl overflow-hidden transition-all duration-150 flex flex-col"
       style={{
         backgroundColor: bg,
-        border: `1.5px ${isUnconf ? 'dashed' : 'solid'} ${border}`,
+        border: `1.5px ${ (isUnconf || isConfOpt) ? 'dashed' : 'solid' } ${border}`,
         cursor: dim ? "default" : "pointer",
         opacity: dim ? 0.32 : 1,
         boxShadow: sel ? `0 2px 12px rgba(0,0,0,0.18)` : "none",
@@ -338,14 +338,35 @@ function Card({ materia, state, t, onCardClick, onInfo }) {
     >
       <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: bar }} />
       <div className="pl-4 pr-3 pt-3 pb-3 flex-1 flex flex-col">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-black tracking-widest uppercase px-1.5 py-0.5 rounded" style={{ backgroundColor: badgeBg, color: idC }}>
-            {materia.id}
-          </span>
-          <span className="text-xs font-bold rounded px-1.5 py-0.5" style={{ backgroundColor: badgeBg, color: idC }}>
-            {materia.creditos}cr
+        {/* Contenedor principal de la parte superior */}
+        <div className="flex items-start justify-between mb-2 gap-2">
+          
+          {/* Columna izquierda: Código arriba, Badge de Optativa abajo */}
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-xs font-black tracking-widest uppercase px-1.5 py-0.5 rounded" style={{ backgroundColor: badgeBg, color: idC }}>
+              {materia.id}
+            </span>
+            
+            {isConfOpt && (
+              <span 
+                className="text-[9px] font-black tracking-wider uppercase px-1.5 py-0.5 rounded-md self-start" 
+                style={{ 
+                  backgroundColor: idC + '1F', 
+                  border: `1px solid ${idC}`, 
+                  color: idC
+                }}
+              >
+                Optativa
+              </span>
+            )}
+          </div>
+          
+          {/* Lado derecho: Créditos */}
+          <span className="text-xs font-bold rounded px-1.5 py-0.5 whitespace-nowrap" style={{ backgroundColor: badgeBg, color: idC }}>
+            Créditos: {materia.creditos}
           </span>
         </div>
+
         <p className="text-sm font-semibold leading-snug mb-3 flex-1" style={{ color: nameC }}>
           {isUnconf ? `[${materia.nombre}]` : materia.nombre}
         </p>
@@ -362,7 +383,6 @@ function Card({ materia, state, t, onCardClick, onInfo }) {
     </div>
   );
 }
-
 // ─── THEME SWITCHER ───────────────────────────────────────────────────────────
 function ThemeSwitcher({ current, onChange, t }) {
   const [open, setOpen] = useState(false);
